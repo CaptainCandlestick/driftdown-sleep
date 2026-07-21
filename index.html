@@ -41,13 +41,15 @@
     <p>A healthy brain drifting off naturally cycles from relaxed alpha waves (~8–12 Hz) into theta (~4–8 Hz) and then delta (~0.5–4 Hz) as sleep deepens. In insomnia, that transition is often weaker or slower to arrive.</p>
     <p>Binaural beats are created by playing two slightly different tones, one per ear. Your brain perceives the mathematical difference between them as a slow pulsing "beat" — and some studies suggest brain activity can partially entrain toward that beat frequency, nudging it toward theta/delta ranges associated with sleep onset.</p>
     <p>This app generates those tones live using the Web Audio API rather than a compressed audio file, so nothing gets re-encoded or lossy on the way to your ears.</p>
+    <p>The optional background noise defaults to pink noise rather than the more common white noise: separate from the binaural-beat research, steady pink noise played during sleep has itself been linked to increased slow-oscillation activity and more deep (N3) sleep in small trials — an easy, low-risk addition alongside the tones.</p>
     <p class="honest">Being direct about the evidence: results are mixed. Some trials show meaningfully faster sleep onset and better sleep quality; others show little difference versus calming music alone. It seems to help a meaningful share of people, but it isn't a guaranteed fix, and it's not a substitute for treating an underlying sleep disorder.</p>
     <p class="sources">
       Sources:
       <a href="https://www.sleepfoundation.org/noise-and-sleep/binaural-beats" target="_blank" rel="noopener">Sleep Foundation — Binaural Beats for Sleep</a>,
       <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12202548/" target="_blank" rel="noopener">Meta-analysis: acoustic stimulation for insomnia (PMC, 2025)</a>,
       <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9909225/" target="_blank" rel="noopener">All-night binaural beat entrainment study protocol (Frontiers/PMC)</a>,
-      <a href="https://pubmed.ncbi.nlm.nih.gov/38077174/" target="_blank" rel="noopener">Theta binaural beats & theta power in primary insomnia (PubMed)</a>
+      <a href="https://pubmed.ncbi.nlm.nih.gov/38077174/" target="_blank" rel="noopener">Theta binaural beats & theta power in primary insomnia (PubMed)</a>,
+      <a href="https://www.tandfonline.com/doi/full/10.2147/NSS.S243204" target="_blank" rel="noopener">Non-phase-locked pink noise increases slow oscillations & N3 sleep (Nature Sci Sleep)</a>
     </p>
     <button class="btn btn-primary" id="btn-science-back">Back</button>
   </div>
@@ -83,7 +85,8 @@
 
       <fieldset>
         <legend>Add background noise under the tones?</legend>
-        <label><input type="radio" name="q4" value="brown" checked> Yes, brown noise (deep, soft)</label>
+        <label><input type="radio" name="q4" value="pink" checked> Pink noise (research-backed for deep sleep)</label>
+        <label><input type="radio" name="q4" value="brown"> Brown noise (deeper, softer)</label>
         <label><input type="radio" name="q4" value="none"> No, tones only</label>
       </fieldset>
 
@@ -113,6 +116,16 @@
         <span id="carrier-value">180</span>
       </label>
       <p class="muted small">Lower = deeper/softer tone. Most people find 140–220 Hz comfortable.</p>
+
+      <label class="range-row noise-row">
+        <span>Background noise</span>
+        <select id="noise-type-select">
+          <option value="pink">Pink noise</option>
+          <option value="brown">Brown noise</option>
+          <option value="none">Off</option>
+        </select>
+      </label>
+      <p class="muted small">Pink noise has more direct evidence for boosting deep sleep; brown noise is deeper/softer-sounding.</p>
     </div>
 
     <button class="btn btn-link" id="btn-retake-assessment">Retake sleep check</button>

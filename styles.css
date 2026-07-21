@@ -251,6 +251,19 @@ input[type="range"] {
   accent-color: var(--accent);
 }
 
+.noise-row {
+  grid-template-columns: 110px 1fr;
+}
+
+.noise-row select {
+  background: var(--card-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+}
+
 .player-card {
   text-align: center;
 }

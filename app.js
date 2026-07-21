@@ -106,6 +106,15 @@ class BinauralEngine {
     this.autoStopTimer = null;
   }
 
+  _fadeBufferEdges(data, length, rate) {
+    const fadeLen = Math.floor(rate * 0.05);
+    for (let i = 0; i < fadeLen; i++) {
+      const g = i / fadeLen;
+      data[i] *= g;
+      data[length - 1 - i] *= g;
+    }
+  }
+
   _createBrownNoiseBuffer(ctx, seconds = 40) {
     const rate = ctx.sampleRate;
     const length = Math.floor(seconds * rate);
@@ -118,17 +127,43 @@ class BinauralEngine {
         last = (last + 0.02 * white) / 1.02;
         data[i] = last * 3.5;
       }
-      const fadeLen = Math.floor(rate * 0.05);
-      for (let i = 0; i < fadeLen; i++) {
-        const g = i / fadeLen;
-        data[i] *= g;
-        data[length - 1 - i] *= g;
-      }
+      this._fadeBufferEdges(data, length, rate);
     }
     return buffer;
   }
 
-  async start({ protocol, carrierHz, toneVolume, noiseVolume, useNoise }) {
+  // Paul Kellett's refined pink noise approximation (7-pole filter of white noise).
+  _createPinkNoiseBuffer(ctx, seconds = 40) {
+    const rate = ctx.sampleRate;
+    const length = Math.floor(seconds * rate);
+    const buffer = ctx.createBuffer(2, length, rate);
+    for (let ch = 0; ch < 2; ch++) {
+      const data = buffer.getChannelData(ch);
+      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+      for (let i = 0; i < length; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856;
+        b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+        const pink = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+        b6 = white * 0.115926;
+        data[i] = pink * 0.11;
+      }
+      this._fadeBufferEdges(data, length, rate);
+    }
+    return buffer;
+  }
+
+  _createNoiseBuffer(ctx, noiseType, seconds = 40) {
+    return noiseType === 'pink'
+      ? this._createPinkNoiseBuffer(ctx, seconds)
+      : this._createBrownNoiseBuffer(ctx, seconds);
+  }
+
+  async start({ protocol, carrierHz, toneVolume, noiseVolume, noiseType }) {
     if (this.running) await this.stop(0.05);
 
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -152,11 +187,11 @@ class BinauralEngine {
     merger.connect(toneGain);
 
     const noiseGain = ctx.createGain();
-    noiseGain.gain.value = useNoise ? noiseVolume : 0;
+    noiseGain.gain.value = noiseType !== 'none' ? noiseVolume : 0;
     let noiseSource = null;
-    if (useNoise) {
+    if (noiseType !== 'none') {
       noiseSource = ctx.createBufferSource();
-      noiseSource.buffer = this._createBrownNoiseBuffer(ctx, 40);
+      noiseSource.buffer = this._createNoiseBuffer(ctx, noiseType, 40);
       noiseSource.loop = true;
       noiseSource.connect(noiseGain);
     }
@@ -325,7 +360,7 @@ $('#assessment-form').addEventListener('submit', (e) => {
   showScreen('screen-home');
 });
 $('#btn-skip-assessment').addEventListener('click', () => {
-  const defaults = { q1: 'falling', q2: 'tired-wired', q3: '45', q4: 'brown' };
+  const defaults = { q1: 'falling', q2: 'tired-wired', q3: '45', q4: 'pink' };
   renderHome(defaults, { skipped: true });
   showScreen('screen-home');
 });
@@ -340,6 +375,7 @@ function renderHome(answers, opts = {}) {
   $('#recommendation-note').textContent = opts.skipped
     ? 'Pick whichever session fits tonight.'
     : rec.note || 'Pick whichever session fits tonight.';
+  $('#noise-type-select').value = answers.q4 || 'pink';
 
   const list = $('#protocol-list');
   list.innerHTML = '';
@@ -393,7 +429,7 @@ let uiTimer = null;
 async function startSession(protocolKey) {
   const protocol = PROTOCOLS[protocolKey];
   const carrierHz = parseInt($('#carrier-range').value, 10) || protocol.carrierDefault;
-  const useNoise = currentAnswers ? currentAnswers.q4 !== 'none' : true;
+  const noiseType = $('#noise-type-select').value || 'pink';
   const toneVolume = parseInt($('#tone-volume').value, 10) / 100;
   const noiseVolume = parseInt($('#noise-volume').value, 10) / 100;
 
@@ -404,7 +440,7 @@ async function startSession(protocolKey) {
     protocol.duration >= 3600 ? `Up to ${Math.round(protocol.duration / 3600)}h` : `${Math.round(protocol.duration / 60)} min session`;
 
   try {
-    await engine.start({ protocol, carrierHz, toneVolume, noiseVolume, useNoise });
+    await engine.start({ protocol, carrierHz, toneVolume, noiseVolume, noiseType });
   } catch (err) {
     console.error('DriftDown: failed to start audio engine', err);
     $('#phase-label').textContent = `Couldn't start audio (${err && err.message ? err.message : 'unknown error'}). Tap Stop and try again.`;
