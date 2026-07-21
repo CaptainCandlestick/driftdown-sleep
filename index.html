@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<meta name="theme-color" content="#0b1020" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="DriftDown" />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<link rel="icon" href="icons/icon-192.png" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="stylesheet" href="styles.css" />
+<title>DriftDown — Sleep Sound</title>
+</head>
+<body>
+
+<!-- ===================== SCREEN: INTRO / DISCLAIMER ===================== -->
+<section id="screen-intro" class="screen active">
+  <div class="card">
+    <h1>DriftDown</h1>
+    <p class="tagline">Binaural sound to ease your brain toward sleep.</p>
+
+    <div class="notice">
+      <p><strong>Headphones required.</strong> Binaural beats only work with stereo headphones or earbuds — each ear needs to receive a slightly different tone.</p>
+    </div>
+
+    <div class="notice notice-muted">
+      <p>This is a sound tool, not a medical treatment. Evidence on binaural beats for sleep is promising but mixed — effects vary a lot from person to person. If you have epilepsy, a pacemaker, or a diagnosed sleep disorder, check with a doctor before use. Not for use while driving or operating machinery.</p>
+    </div>
+
+    <button class="btn btn-primary" id="btn-intro-continue">Get started</button>
+    <button class="btn btn-link" id="btn-show-science">How this actually works</button>
+  </div>
+</section>
+
+<!-- ===================== SCREEN: SCIENCE INFO ===================== -->
+<section id="screen-science" class="screen">
+  <div class="card">
+    <h2>The actual science</h2>
+    <p>A healthy brain drifting off naturally cycles from relaxed alpha waves (~8–12 Hz) into theta (~4–8 Hz) and then delta (~0.5–4 Hz) as sleep deepens. In insomnia, that transition is often weaker or slower to arrive.</p>
+    <p>Binaural beats are created by playing two slightly different tones, one per ear. Your brain perceives the mathematical difference between them as a slow pulsing "beat" — and some studies suggest brain activity can partially entrain toward that beat frequency, nudging it toward theta/delta ranges associated with sleep onset.</p>
+    <p>This app generates those tones live using the Web Audio API rather than a compressed audio file, so nothing gets re-encoded or lossy on the way to your ears.</p>
+    <p class="honest">Being direct about the evidence: results are mixed. Some trials show meaningfully faster sleep onset and better sleep quality; others show little difference versus calming music alone. It seems to help a meaningful share of people, but it isn't a guaranteed fix, and it's not a substitute for treating an underlying sleep disorder.</p>
+    <p class="sources">
+      Sources:
+      <a href="https://www.sleepfoundation.org/noise-and-sleep/binaural-beats" target="_blank" rel="noopener">Sleep Foundation — Binaural Beats for Sleep</a>,
+      <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12202548/" target="_blank" rel="noopener">Meta-analysis: acoustic stimulation for insomnia (PMC, 2025)</a>,
+      <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9909225/" target="_blank" rel="noopener">All-night binaural beat entrainment study protocol (Frontiers/PMC)</a>,
+      <a href="https://pubmed.ncbi.nlm.nih.gov/38077174/" target="_blank" rel="noopener">Theta binaural beats & theta power in primary insomnia (PubMed)</a>
+    </p>
+    <button class="btn btn-primary" id="btn-science-back">Back</button>
+  </div>
+</section>
+
+<!-- ===================== SCREEN: ASSESSMENT ===================== -->
+<section id="screen-assessment" class="screen">
+  <div class="card">
+    <h2>Quick sleep check</h2>
+    <p class="muted">Four questions, no wrong answers — this just picks a sensible starting protocol. You can always switch manually.</p>
+
+    <form id="assessment-form">
+      <fieldset>
+        <legend>What's the bigger struggle?</legend>
+        <label><input type="radio" name="q1" value="falling" checked> Falling asleep in the first place</label>
+        <label><input type="radio" name="q1" value="staying"> Staying asleep through the night</label>
+        <label><input type="radio" name="q1" value="both"> Both, about equally</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>What's your mind usually doing at bedtime?</legend>
+        <label><input type="radio" name="q2" value="racing" checked> Racing / can't switch off</label>
+        <label><input type="radio" name="q2" value="tired-wired"> Tired but "wired"</label>
+        <label><input type="radio" name="q2" value="calm"> Fairly calm already</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>How long do you want tonight's session?</legend>
+        <label><input type="radio" name="q3" value="20" checked> Short wind-down (~20 min)</label>
+        <label><input type="radio" name="q3" value="45"> Full sleep-onset session (~45 min)</label>
+        <label><input type="radio" name="q3" value="allnight"> Play through the night</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Add background noise under the tones?</legend>
+        <label><input type="radio" name="q4" value="brown" checked> Yes, brown noise (deep, soft)</label>
+        <label><input type="radio" name="q4" value="none"> No, tones only</label>
+      </fieldset>
+
+      <button type="submit" class="btn btn-primary">Show my recommendation</button>
+      <button type="button" class="btn btn-link" id="btn-skip-assessment">Skip, let me pick manually</button>
+    </form>
+  </div>
+</section>
+
+<!-- ===================== SCREEN: HOME / PROTOCOL PICKER ===================== -->
+<section id="screen-home" class="screen">
+  <div class="card">
+    <h2>Tonight</h2>
+    <p id="recommendation-note" class="muted"></p>
+
+    <div class="protocol-list" id="protocol-list">
+      <!-- populated by JS -->
+    </div>
+
+    <div class="advanced-toggle">
+      <button type="button" class="btn btn-link" id="btn-toggle-advanced">Advanced settings</button>
+    </div>
+    <div id="advanced-panel" class="advanced-panel hidden">
+      <label class="range-row">
+        <span>Carrier tone (Hz)</span>
+        <input type="range" id="carrier-range" min="90" max="300" step="1" value="180">
+        <span id="carrier-value">180</span>
+      </label>
+      <p class="muted small">Lower = deeper/softer tone. Most people find 140–220 Hz comfortable.</p>
+    </div>
+
+    <button class="btn btn-link" id="btn-retake-assessment">Retake sleep check</button>
+  </div>
+</section>
+
+<!-- ===================== SCREEN: PLAYER ===================== -->
+<section id="screen-player" class="screen">
+  <div class="card player-card">
+    <div class="phase-label" id="phase-label">Preparing…</div>
+    <div class="timer" id="timer-display">00:00</div>
+    <div class="timer-total" id="timer-total-label"></div>
+    <div class="freq-readout" id="freq-readout"></div>
+
+    <div class="headphone-reminder">🎧 Keep headphones on</div>
+
+    <div class="slider-group">
+      <label class="range-row">
+        <span>Tone volume</span>
+        <input type="range" id="tone-volume" min="0" max="100" value="70">
+      </label>
+      <label class="range-row">
+        <span>Noise volume</span>
+        <input type="range" id="noise-volume" min="0" max="100" value="40">
+      </label>
+    </div>
+
+    <button class="btn btn-stop" id="btn-stop-session">Stop</button>
+    <p class="muted small" id="lock-screen-note">Keep this tab open and your phone unlocked (screen can be dim/face-down) for the sound to keep playing — locking the phone or switching apps will pause it. This app holds your screen awake automatically during a session.</p>
+  </div>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>
