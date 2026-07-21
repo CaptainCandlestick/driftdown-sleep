@@ -2,6 +2,8 @@
 
 A binaural-beat sleep sound player you run from your iPhone's browser. No app store, no build step — plain HTML/CSS/JS using the Web Audio API.
 
+**Live:** https://captaincandlestick.github.io/driftdown-sleep/ — works from your phone anytime, no laptop required.
+
 ## What it does
 
 Generates two sine tones live (one per ear) with a small, slowly-changing frequency difference between them — the "binaural beat." Over the course of a session the beat glides from alpha/theta rates down toward theta/delta, roughly following the rhythm a brain follows when it falls asleep naturally. An optional brown-noise bed plays underneath to mask the tone and soften it.
@@ -19,13 +21,15 @@ The in-app "How this actually works" screen links the actual research this is ba
 
 ## Running it
 
-No build step. From this folder:
+Just open the live link above in **Safari** on your iPhone (not Chrome — this relies on iOS-specific Web Audio/PWA behavior). It's hosted on GitHub Pages, so no laptop/local server needed.
+
+For local development instead, from this folder:
 
 ```
 python3 -m http.server 8000
 ```
 
-Then, on your iPhone (same Wi-Fi network), open **Safari** (not Chrome — this relies on iOS-specific Web Audio/PWA behavior) and go to `http://<this-computer's-LAN-IP>:8000`.
+Then, on your iPhone (same Wi-Fi network), go to `http://<this-computer's-LAN-IP>:8000`.
 
 **Headphones are required** — binaural beats only work over stereo left/right separation.
 
@@ -34,7 +38,7 @@ Optional: Share → **Add to Home Screen** for an app-like icon and full-screen 
 ## Known limitations
 
 - **Screen must stay unlocked during a session.** iOS suspends Web Audio when the tab is backgrounded/locked, so this can't yet survive a fully locked screen. The app requests a Wake Lock on session start so the display won't auto-lock — dim it or leave the phone face-down instead of pressing the lock button.
-- **Offline/installable caching (the service worker) only registers over HTTPS or `localhost`.** Testing over `http://<lan-ip>:8000` works fine but skips that layer. For a stable HTTPS link usable off your home network and full offline support, deploy the folder as-is to a static host (e.g. GitHub Pages, Netlify).
+- **Offline/installable caching (the service worker) only registers over HTTPS or `localhost`.** The GitHub Pages link is HTTPS, so this works there; testing over `http://<lan-ip>:8000` skips that layer.
 - True lock-screen playback (screen off, still playing) would need a different architecture — pre-rendering a session to an actual audio file and playing it through a standard `<audio src="...">` element, which iOS treats as real background media. Not implemented yet.
 
 ## Files
