@@ -1,15 +1,25 @@
+/* ============================================================
+   Calm Teal — dark slate-teal, soft mint accent.
+   ============================================================ */
 :root {
   color-scheme: dark;
-  --bg-top: #0b1020;
-  --bg-bot: #141b33;
-  --card-bg: #161d33;
-  --text: #e7e9f2;
-  --text-muted: #9aa0c0;
-  --accent: #7c9cff;
-  --accent-soft: #3a4380;
-  --warn-bg: #2a2140;
-  --danger: #ff6f6f;
-  --border: #2a3358;
+  --bg-solid: #0a1613;
+  --bg-glow-1: rgba(70, 200, 180, 0.16);
+  --bg-glow-2: rgba(60, 150, 190, 0.10);
+  --bg-glow-3: rgba(150, 255, 220, 0.06);
+  --card-bg: #10201c;
+  --card-border: #234038;
+  --text: #e6f5f0;
+  --text-muted: #8fb0a6;
+  --accent: #4fd8b8;
+  --accent-2: #8be9d0;
+  --accent-contrast: #06120f;
+  --warn-bg: #14261f;
+  --danger: #ff8f7d;
+  --radius-card: 28px;
+  --radius-btn: 18px;
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --shadow-card: 0 24px 70px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.04) inset;
 }
 
 * { box-sizing: border-box; }
@@ -18,16 +28,34 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  background: radial-gradient(120% 120% at 50% 0%, var(--bg-bot), var(--bg-top));
+  background: var(--bg-solid);
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-family);
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
   user-select: none;
   -webkit-user-select: none;
 }
 
+body {
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(46% 32% at 18% 8%, var(--bg-glow-1), transparent 70%),
+    radial-gradient(50% 38% at 88% 18%, var(--bg-glow-2), transparent 70%),
+    radial-gradient(60% 40% at 50% 100%, var(--bg-glow-3), transparent 70%);
+}
+
 .screen {
+  position: relative;
+  z-index: 1;
   display: none;
   min-height: 100vh;
   min-height: 100dvh;
@@ -44,37 +72,54 @@ html, body {
   width: 100%;
   max-width: 460px;
   background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 28px 24px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-card);
+  padding: 30px 26px;
+  box-shadow: var(--shadow-card);
+}
+
+.logo-mark {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
 }
 
 h1 {
   font-size: 2rem;
+  font-weight: 750;
+  text-align: center;
   margin: 0 0 4px;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.2px;
+  background: linear-gradient(135deg, var(--text), var(--accent-2) 130%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 h2 {
   font-size: 1.4rem;
+  font-weight: 700;
   margin: 0 0 12px;
 }
 
+.intro-card { text-align: center; }
+.intro-card .btn { text-align: center; }
+.intro-card .notice { text-align: left; }
+
 .tagline {
   color: var(--text-muted);
-  margin: 0 0 20px;
+  margin: 0 0 22px;
 }
 
-p { line-height: 1.5; }
+p { line-height: 1.55; }
 
 .muted { color: var(--text-muted); }
 .small { font-size: 0.82rem; }
 
 .notice {
   background: var(--warn-bg);
-  border: 1px solid var(--border);
-  border-radius: 14px;
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
   padding: 14px 16px;
   margin-bottom: 14px;
 }
@@ -83,7 +128,7 @@ p { line-height: 1.5; }
 
 .notice-muted {
   background: transparent;
-  border-color: var(--border);
+  border-color: var(--card-border);
 }
 
 .notice-muted p {
@@ -111,35 +156,48 @@ p { line-height: 1.5; }
   display: block;
   width: 100%;
   border: none;
-  border-radius: 14px;
-  padding: 15px 18px;
+  border-radius: var(--radius-btn);
+  padding: 16px 18px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 650;
   margin-top: 12px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s ease, filter 0.12s ease, box-shadow 0.12s ease;
 }
 
 .btn-primary {
-  background: var(--accent);
-  color: #0b1020;
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  color: var(--accent-contrast);
+  box-shadow: 0 10px 24px -8px var(--accent);
 }
 
 .btn-primary:active {
-  background: #6484e6;
+  transform: scale(0.98);
+  filter: brightness(0.94);
+  box-shadow: 0 4px 14px -6px var(--accent);
 }
 
 .btn-link {
   background: transparent;
   color: var(--accent);
-  font-weight: 500;
+  font-weight: 550;
   padding: 10px;
+  box-shadow: none;
 }
 
+.btn-link:active { transform: scale(0.98); }
+
 .btn-stop {
-  background: var(--danger);
+  background: linear-gradient(135deg, #ff8a8a, var(--danger));
   color: #2a0e0e;
   margin-top: 28px;
+  box-shadow: 0 10px 24px -8px var(--danger);
+}
+
+.btn-stop:active {
+  transform: scale(0.98);
+  box-shadow: 0 4px 14px -6px var(--danger);
 }
 
 fieldset {
@@ -149,7 +207,7 @@ fieldset {
 }
 
 legend {
-  font-weight: 600;
+  font-weight: 650;
   margin-bottom: 8px;
   padding: 0;
 }
@@ -158,17 +216,18 @@ label {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
   margin-bottom: 8px;
   font-size: 0.94rem;
   cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
 }
 
 label:has(input:checked) {
   border-color: var(--accent);
-  background: rgba(124, 156, 255, 0.08);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 input[type="radio"] {
@@ -185,33 +244,40 @@ input[type="radio"] {
 }
 
 .protocol-card {
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 16px;
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  padding: 18px;
   cursor: pointer;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, transform 0.15s;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
 }
 
 .protocol-card.recommended {
   border-color: var(--accent);
-  background: rgba(124, 156, 255, 0.08);
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent), 0 12px 30px -14px var(--accent);
 }
 
 .protocol-card h3 {
-  margin: 0 0 4px;
-  font-size: 1.05rem;
+  margin: 0 0 6px;
+  font-size: 1.08rem;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+}
+
+.protocol-icon {
+  font-size: 1.3rem;
+  line-height: 1;
 }
 
 .badge {
-  font-size: 0.68rem;
-  background: var(--accent);
-  color: #0b1020;
-  padding: 2px 8px;
+  font-size: 0.66rem;
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  color: var(--accent-contrast);
+  padding: 3px 9px;
   border-radius: 999px;
-  font-weight: 700;
+  font-weight: 750;
   letter-spacing: 0.4px;
   text-transform: uppercase;
 }
@@ -229,7 +295,7 @@ input[type="radio"] {
 .advanced-toggle { margin-top: 4px; }
 
 .advanced-panel {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--card-border);
   padding-top: 14px;
   margin-top: 4px;
 }
@@ -258,14 +324,54 @@ input[type="range"] {
 .noise-row select {
   background: var(--card-bg);
   color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
   padding: 8px 10px;
   font-size: 0.9rem;
 }
 
 .player-card {
   text-align: center;
+}
+
+.breathing-orb {
+  --pulse-duration: 6s;
+  width: 132px;
+  height: 132px;
+  margin: 4px auto 22px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.breathing-orb::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 72%);
+  opacity: 0.35;
+  animation: orb-glow var(--pulse-duration) ease-in-out infinite;
+}
+
+.breathing-orb span {
+  width: 58%;
+  height: 58%;
+  border-radius: 50%;
+  background: linear-gradient(160deg, var(--accent-2), var(--accent));
+  box-shadow: 0 0 40px -6px var(--accent);
+  animation: orb-scale var(--pulse-duration) ease-in-out infinite;
+}
+
+@keyframes orb-scale {
+  0%, 100% { transform: scale(0.86); opacity: 0.88; }
+  50% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes orb-glow {
+  0%, 100% { transform: scale(0.9); opacity: 0.22; }
+  50% { transform: scale(1.25); opacity: 0.45; }
 }
 
 .phase-label {
@@ -276,7 +382,7 @@ input[type="range"] {
 
 .timer {
   font-size: 3.4rem;
-  font-weight: 700;
+  font-weight: 750;
   letter-spacing: 1px;
   margin: 8px 0 2px;
   font-variant-numeric: tabular-nums;
@@ -307,8 +413,4 @@ input[type="range"] {
 
 #lock-screen-note {
   margin-top: 18px;
-}
-
-@media (prefers-color-scheme: light) {
-  /* App is intentionally dark-only (bedtime use), regardless of system theme */
 }

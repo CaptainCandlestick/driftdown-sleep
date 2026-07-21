@@ -15,6 +15,7 @@ const STORAGE_KEY = 'driftdown_assessment_v1';
 const PROTOCOLS = {
   quick: {
     key: 'quick',
+    icon: '🌊',
     name: 'Quick Wind-Down',
     blurb: '~20 min. Alpha easing into theta — for settling a busy mind before sleep.',
     duration: 20 * 60,
@@ -26,6 +27,7 @@ const PROTOCOLS = {
   },
   deep: {
     key: 'deep',
+    icon: '🌙',
     name: 'Deep Sleep Onset',
     blurb: '~45 min. Full alpha → theta → delta glide, timed to natural sleep onset.',
     duration: 45 * 60,
@@ -43,6 +45,7 @@ const PROTOCOLS = {
   },
   allnight: {
     key: 'allnight',
+    icon: '✨',
     name: 'All Night',
     blurb: 'Up to 8 hrs. Steady low-volume delta rhythm to help you stay asleep.',
     duration: 8 * 60 * 60,
@@ -383,7 +386,7 @@ function renderHome(answers, opts = {}) {
     const div = document.createElement('div');
     div.className = 'protocol-card' + (p.key === rec.protocolKey ? ' recommended' : '');
     div.innerHTML = `
-      <h3>${p.name} ${p.key === rec.protocolKey ? '<span class="badge">Recommended</span>' : ''}</h3>
+      <h3><span class="protocol-icon">${p.icon}</span> ${p.name} ${p.key === rec.protocolKey ? '<span class="badge">Recommended</span>' : ''}</h3>
       <p>${p.blurb}</p>
       <button class="btn btn-primary" data-protocol="${p.key}">Start</button>
     `;
@@ -466,6 +469,14 @@ function updatePlayerUI() {
   $('#freq-readout').textContent = freqs
     ? `Left ${freqs.left.toFixed(1)} Hz · Right ${freqs.right.toFixed(1)} Hz · Beat ${freqs.beat.toFixed(2)} Hz`
     : '';
+
+  if (freqs) {
+    // Orb pulses faster during alpha, slows toward a long, calm breath as the
+    // beat drifts down into delta — a visual echo of the audio's own glide.
+    const beat = Math.min(10, Math.max(2.5, freqs.beat));
+    const duration = 9 - ((beat - 2.5) / (10 - 2.5)) * (9 - 4);
+    $('#breathing-orb').style.setProperty('--pulse-duration', `${duration.toFixed(2)}s`);
+  }
 }
 
 $('#tone-volume').addEventListener('input', (e) => engine.setToneVolume(e.target.value / 100));

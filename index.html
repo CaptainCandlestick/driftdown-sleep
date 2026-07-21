@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
-<meta name="theme-color" content="#0b1020" />
+<meta name="theme-color" content="#0a1613" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="DriftDown" />
@@ -17,7 +17,23 @@
 
 <!-- ===================== SCREEN: INTRO / DISCLAIMER ===================== -->
 <section id="screen-intro" class="screen active">
-  <div class="card">
+  <div class="card intro-card">
+    <div class="logo-mark" aria-hidden="true">
+      <svg viewBox="0 0 64 64" width="56" height="56">
+        <defs>
+          <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.55"/>
+            <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="moonFill" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="var(--accent-light, var(--accent))"/>
+            <stop offset="100%" stop-color="var(--accent)"/>
+          </linearGradient>
+        </defs>
+        <circle cx="32" cy="32" r="30" fill="url(#moonGlow)"/>
+        <path d="M40 10a22 22 0 1 0 0 44 26 26 0 0 1 0-44Z" fill="url(#moonFill)"/>
+      </svg>
+    </div>
     <h1>DriftDown</h1>
     <p class="tagline">Binaural sound to ease your brain toward sleep.</p>
 
@@ -135,6 +151,7 @@
 <!-- ===================== SCREEN: PLAYER ===================== -->
 <section id="screen-player" class="screen">
   <div class="card player-card">
+    <div class="breathing-orb" id="breathing-orb" aria-hidden="true"><span></span></div>
     <div class="phase-label" id="phase-label">Preparing…</div>
     <div class="timer" id="timer-display">00:00</div>
     <div class="timer-total" id="timer-total-label"></div>
